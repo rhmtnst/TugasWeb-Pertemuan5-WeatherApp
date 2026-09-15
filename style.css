@@ -1,0 +1,479 @@
+/* =========================================================
+   WEATHER APP — tampilan native-app style, tema dinamis
+   ========================================================= */
+
+:root {
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.78);
+  --glass-bg: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.28);
+  --grad-1: #4facfe;
+  --grad-2: #2266c4;
+}
+
+/* ---- Tema per kondisi cuaca (di-set lewat [data-theme] di <body>) ---- */
+body[data-theme="default"] { --grad-1: #6a85b6; --grad-2: #bac8e0; }
+body[data-theme="clear-day"] { --grad-1: #4facfe; --grad-2: #1c5fa8; }
+body[data-theme="clear-night"] { --grad-1: #0f2027; --grad-2: #23415c; }
+body[data-theme="clouds"] { --grad-1: #757f9a; --grad-2: #444a5c; }
+body[data-theme="rain"] { --grad-1: #3a4750; --grad-2: #1c2733; }
+body[data-theme="thunderstorm"] { --grad-1: #232526; --grad-2: #0d0f10; }
+body[data-theme="snow"] { --grad-1: #83a4d4; --grad-2: #5c7ea3; --ink: #ffffff; }
+body[data-theme="mist"] { --grad-1: #94a3ad; --grad-2: #5b6b76; }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Sora", system-ui, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(160deg, var(--grad-1), var(--grad-2) 75%);
+  transition: background 0.8s ease;
+  overflow-x: hidden;
+}
+
+.app-shell {
+  flex: 1;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Search bar ---- */
+.search-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: 999px;
+  padding: 6px 6px 6px 18px;
+}
+
+.suggestion-box {
+  width: 100%;
+  margin-top: 6px;
+  background: rgba(20, 30, 40, 0.85);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.suggestion-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  padding: 10px 16px 4px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#cityInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.98rem;
+  padding: 10px 0;
+}
+
+#cityInput::placeholder {
+  color: var(--ink-soft);
+}
+
+#cityInput:focus {
+  outline: none;
+}
+
+.search-bar button {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-bar button:hover {
+  background: rgba(255, 255, 255, 0.34);
+}
+
+/* ---- Riwayat pencarian ---- */
+.history-wrapper {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.history-chip {
+  padding: 6px 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.history-chip:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* ---- Intro (state sebelum ada pencarian) ---- */
+.intro-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  opacity: 0.85;
+}
+
+.intro-emoji {
+  font-size: 2.6rem;
+  margin: 0;
+}
+
+.intro-text {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  max-width: 22ch;
+}
+
+/* ---- Loading ---- */
+.loading-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--ink-soft);
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Error ---- */
+.error-box {
+  margin-top: 40px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ---- Weather Result ---- */
+.weather-result {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 20px;
+  animation: reveal 0.5s ease;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.unit-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 3px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.unit-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: inherit;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.unit-btn.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1c2733;
+  font-weight: 600;
+}
+
+.city-name {
+  margin: 8px 0 0;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-soft);
+}
+
+.weather-icon {
+  width: 140px;
+  height: 140px;
+  margin: 4px 0 -8px;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.temp {
+  font-size: 5.2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  text-transform: capitalize;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  margin: 6px 0 28px;
+}
+
+/* ---- Bottom sheet detail ---- */
+.detail-sheet {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 18px 8px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.detail-label {
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.forecast-wrapper {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.forecast-label {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin: 0 0 10px;
+}
+
+.forecast-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.forecast-card {
+  flex: 1;
+  min-width: 68px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.forecast-day {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin: 0 0 4px;
+}
+
+.forecast-card img {
+  width: 36px;
+  height: 36px;
+}
+
+.forecast-temp {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 2px 0 0;
+}
+
+.map-wrapper {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-open-link {
+  color: var(--ink);
+  font-size: 0.75rem;
+  text-decoration: none;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.map-open-link:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.map-frame {
+  width: 100%;
+  height: 300px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+}
+
+.info-wrapper {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.info-list {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 4px 16px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row span:first-child {
+  color: var(--ink-soft);
+}
+
+.info-row span:last-child {
+  font-weight: 600;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 14px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ---- Aksesibilitas: fokus keyboard tetap kelihatan ---- */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* ---- Hormati preferensi reduce motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .weather-icon { animation: none; }
+  .weather-result { animation: none; }
+}
+
+/* ---- Responsif: layar sangat kecil ---- */
+@media (max-width: 340px) {
+  .temp { font-size: 4.2rem; }
+  .weather-icon { width: 110px; height: 110px; }
+}

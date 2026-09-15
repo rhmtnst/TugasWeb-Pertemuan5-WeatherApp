@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App — Tugas Rutin 5</title>
+  <meta name="description" content="Aplikasi cuaca sederhana menggunakan OpenWeatherMap API, JavaScript ES6+, dan Fetch API.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="default">
+
+  <div class="app-shell">
+
+    <!-- Search bar -->
+    <form id="searchForm" class="search-bar">
+      <input type="text" id="cityInput" placeholder="Cari kota..." autocomplete="off">
+      <button type="submit" aria-label="Cari">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </form>
+
+    <div id="suggestionBox" class="suggestion-box hidden"></div>
+
+    <!-- Riwayat Pencarian (bonus) -->
+    <div id="historyWrapper" class="history-wrapper hidden">
+      <div id="historyList" class="history-list"></div>
+    </div>
+
+    <!-- Empty / Intro state -->
+    <div id="introState" class="intro-state">
+      <p class="intro-emoji">🌍</p>
+      <p class="intro-text">Cari nama kota untuk melihat cuacanya</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden loading-state">
+      <div class="spinner"></div>
+      <p>Memuat data...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error" class="hidden error-box"></div>
+
+    <!-- Weather Result -->
+    <section id="weatherResult" class="weather-result hidden">
+
+      <div class="unit-toggle">
+        <button id="unitC" class="unit-btn active" data-unit="C">°C</button>
+        <button id="unitF" class="unit-btn" data-unit="F">°F</button>
+      </div>
+
+      <p id="cityName" class="city-name"></p>
+      <img id="weatherIcon" class="weather-icon" alt="Ikon cuaca">
+      <p id="temperature" class="temp"></p>
+      <p id="description" class="description"></p>
+
+      <div class="detail-sheet">
+        <div class="detail-item">
+          <span class="detail-label">Kelembaban</span>
+          <span id="humidity" class="detail-value"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Angin</span>
+          <span id="wind" class="detail-value"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Terasa Seperti</span>
+          <span id="feelsLike" class="detail-value"></span>
+        </div>
+      </div>
+
+      <div id="forecastWrapper" class="forecast-wrapper">
+        <p class="forecast-label">Prakiraan 5 Hari</p>
+       <div id="forecastList" class="forecast-list"></div>
+      </div>
+
+      <div id="mapWrapper" class="map-wrapper">
+  <div id="mapWrapper" class="map-wrapper">
+  <div class="map-header">
+    <p class="forecast-label">Lokasi di Peta</p>
+    <a id="mapLink" href="#" target="_blank" rel="noopener" class="map-open-link">Buka di Maps ↗</a>
+  </div>
+  <iframe id="mapFrame" class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
+      <div id="infoWrapper" class="info-wrapper">
+        <p class="forecast-label">Informasi Singkat</p>
+        <div class="info-list">
+          <div class="info-row"><span>Negara</span><span id="infoCountry"></span></div>
+          <div class="info-row"><span>Koordinat</span><span id="infoCoord"></span></div>
+          <div class="info-row"><span>Zona Waktu</span><span id="infoTimezone"></span></div>
+          <div class="info-row"><span>Matahari Terbit</span><span id="infoSunrise"></span></div>
+          <div class="info-row"><span>Matahari Terbenam</span><span id="infoSunset"></span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>Tugas Rutin 5 — Pemrograman Web · Data cuaca oleh OpenWeatherMap</footer>
+
+  <!-- config.js berisi API_KEY, sengaja dipisah & di-gitignore -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
